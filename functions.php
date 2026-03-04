@@ -6,8 +6,16 @@ $contatos = [
         'id' => gerarIdContato(),
         'nome' => 'João Silva',
         'email' => 'joao.silva@example.com',
-        'telefone' => '(11) 99999-9999',
+        'telefone' => '11 99999-9999',
         'idade' => 30
+    ],
+
+    [
+        'id' => gerarIdContato(),
+        'nome' => 'João Carlos',
+        'email' => 'joao.carlos@example.com',
+        'telefone' => '11 99999-9999',
+        'idade' => 20
     ]
 ];
 
@@ -38,10 +46,10 @@ function cadastrarContato() {
     system("clear");
 
     echo "Cadastro de contato \n";
-    $nome = readline("Digite o nome do contato: ");
-    $email = readline("Digite o email do contato: ");
-    $telefone = readline("Digite o telefone do contato: ");
-    $idade = readline("Digite a idade do contato: ");
+    $nome = validarNome(readline("Digite o nome do contato: "));
+    $email = validarEmail(readline("Digite o email do contato: "));
+    $telefone = validarTelefone(readline("Digite o telefone do contato: "));
+    $idade = validarIdade(readline("Digite a idade do contato: "));
 
     $contato = [
         'nome' => $nome,
@@ -51,6 +59,81 @@ function cadastrarContato() {
     ];
 
     return $contato;
+
+}
+
+// Criando uma função para validar os dados de entrada do contato, garantindo que o nome, email, telefone e idade estejam no formato correto e não sejam vazios, sendo possivel reutilizar essas validações na function editarContato() também.
+function validarNome($nome){
+
+    while(true) {
+
+        if (empty($nome)) {
+            echo "O nome não pode ser vazio!\n";
+        } elseif (strlen($nome) < 3) {
+            echo "O nome deve conter pelo menos 3 caracteres!\n";
+        } elseif (!preg_match("/^[a-zA-Z\s]+$/", $nome)) {
+            echo "O nome deve conter apenas letras e espaços!\n";
+        } else {
+            return $nome;
+        }
+
+        $nome = readline("Digite o nome do contato: ");
+
+    }
+
+}
+
+function validarEmail($email) {
+
+    while(true) {    
+
+        if (empty($email)) {
+            echo "O email não pode ser vazio!\n";
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            echo "O email deve ser um endereço de email válido!\n";
+        } else {
+            return $email;
+        }
+
+        $email = readline("Digite o email do contato: ");
+
+    }
+}
+
+function validarTelefone($telefone){
+
+    while(true){
+        
+        if(empty($telefone)) {
+            echo "O telefone não pode ser vazio!\n";
+        }if(!preg_match("/^\d{2} \d{5}-\d{4}$/", $telefone)) {
+            echo "O telefone deve estar no formato 'XX XXXXX-XXXX'!\n";
+        }
+        else {
+            return $telefone;
+        }
+
+        $telefone = readline("Digite o telefone do contato: ");
+
+    }
+
+}
+
+function validarIdade($idade) {
+
+    while(true){
+        
+        if (!is_numeric($idade)) {
+            echo "A idade deve ser um numero!\n";
+        } elseif (empty($idade && $idade != 0)) {
+            echo "A idade não pode ser vazia!\n";
+        } else {
+            return (int)$idade;
+        }
+
+        $idade = readline("Digite a idade do contato: ");
+    
+    }
 
 }
 
@@ -88,7 +171,7 @@ function buscarContato(){
     // Passa por cada contato armazenado e verificando se o nome ou email corresponde com a busca
     foreach($contatos as $index => $contato) {
 
-        if (stripos($contato['nome'], $busca) !== false || stripos($contato['email'], $busca) !== false) {
+        if ((strpos($contato['nome'], $busca) !== false) || (strpos($contato['email'], $busca) !== false)) {
 
             echo "Contato encontrado: \n";
             echo "Nome: " . $contato['nome'] . "\n";
@@ -126,10 +209,10 @@ function editarContato(){
 
     echo "Digite os novos dados do contato (deixe em branco para manter o valor atual): \n";
 
-    $novoNome = readline("Nome ($contato[nome]): ");
-    $novoEmail = readline("Email ($contato[email]): ");
-    $novoTelefone = readline("Telefone ($contato[telefone]): ");
-    $novaIdade = readline("Idade ($contato[idade]): ");
+    $novoNome = validarNome(readline("Nome ($contato[nome]): "));
+    $novoEmail = validarEmail(readline("Email ($contato[email]): "));
+    $novoTelefone = validarTelefone(readline("Telefone ($contato[telefone]): "));
+    $novaIdade = validarIdade(readline("Idade ($contato[idade]): "));
 
     // Atualiza os dados do contato, mantendo os valores atuais se o usuário deixar em branco
     $contatos[$index]['nome'] = !empty($novoNome) ? $novoNome : $contato['nome'];
